@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <style>
+         #childDetails1{
+         width:450px;
+         }
+      </style>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <script>
+         var countriesData=[];
+         function fetchCountries() {
+             $.get("https://restcountries.eu/rest/v2/all", function(data, status) {
+                 countriesData = data;
+                 for (let i = 0; i < data.length; i++) {
+                     var countryOptions = document.createElement('option');
+                     countryHTML = "<option value='" + data[i].alpha2Code + "'>" + data[i].name + "</option>";
+                     countryOptions.innerHTML = countryHTML;
+                     document.getElementById('countries').add(countryOptions);
+                 }
+             });
+         }
+         function showDetails(childId,flagId,selectedCountryData) {
+              debugger;
+             document.getElementById(childId).style.display="inline-block";
+             $("#"+childId).find('p').remove();
+             for (key in selectedCountryData) {
+                 if (typeof(selectedCountryData[key]) != "object") {
+                     var para = document.createElement("P");
+                     para.innerText = key + " : " + selectedCountryData[key];
+                     document.getElementById(childId).appendChild(para);
+                 }
+             }
+             document.getElementById(flagId).src = "https://www.countryflags.io/"+selectedCountryData["alpha2Code"]+"/flat/64.png";
+         };
+         function fetchDetails(){
+         if($("#compareCountry").prop('checked')){
+            var childId="childDetails2"; var flagId = "countryImage2";
+         }else{
+            var childId="childDetails1"; var flagId = "countryImage1";
+         }
+         document.getElementById('compare').style.display="inline-block";
+          var lSelectedCountry = $("#countries").val();
+          for(let t=0;t<countriesData.length;t++){
+             if(lSelectedCountry == countriesData[t].name){
+              showDetails(childId,flagId,countriesData[t]);
+             }
+          }
+         }
+         function compareCountry(){
+         if($("#compareCountry").prop('checked')){
+          document.getElementById('childDetails2').style.display="inline-block";
+          document.getElementById('countryImage2').style.display="inline-block";
+         }else{
+          document.getElementById('childDetails2').style.display="none";
+          document.getElementById('countryImage2').style.display="none";
+         }
+         }
+      </script>
+   </head>
+   <body onload="fetchCountries()" onchange="fetchDetails()">
+      <div style="display:inline-block">
+         <label for="countries">Choose a country:</label>
+         <select id="countries">
+            <option value="PS">Please Select</option>
+         </select>
+      </div>
+      <div id ="compare" style="display:none">
+         <input type="checkbox" id="compareCountry" onchange="compareCountry()">
+         <label for="compareCountry"> Compare with another country</label><br>
+      </div>
+      <div id ="parentDetails">
+         <div id = "childDetails1" style="display:none ">
+            <img id="countryImage1" src="" width="100" height="100">
+         </div>
+         <div id = "childDetails2" style="display:none">
+            <img id="countryImage2" src="" width="100" height="100">
+         </div>
+      </div>
+   </body>
+</html>
